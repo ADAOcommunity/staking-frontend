@@ -12,7 +12,7 @@ import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 type ActionState = "loading" | "success" | "error"
 export default function StakeModalBtn({ actionName, enabled, policyid, contractAddress, action }: { actionName: string, enabled: boolean, policyid: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
-    const [avialableNftUnits, setNftUnits] = useState<string[]>([])
+    const [availableNftUnits, setNftUnits] = useState<string[]>([])
     const [selectedUnits, setSelectedUnits] = useState<string[]>([])
     const [state, setState] = useState<ActionState>()
     const [msg, setMsg] = useState("")
@@ -110,7 +110,7 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
 
     // const selectAll = (select: boolean = true) => {
     //     if(select)
-    //         setSelectedUnits(avialableNftUnits)
+    //         setSelectedUnits(availableNftUnits)
     //     else
     //         setSelectedUnits([])
     // }
@@ -157,7 +157,7 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                 {/* <SearchInput/> */}
                             </div>
                             <div className="grid grid-cols-3 md:grid-cols-5 scrollbar-thin my-4 scrollbar-thumb-sky-900 scrollbar-track-sky-700 overflow-y-scroll">
-                                {avialableNftUnits.map((unit, index) => {
+                                {availableNftUnits.map((unit, index) => {
                                         return <LazyLoadComponent delayMethod="debounce" delayTime={400}>
                                             <NftPreview unit={unit} key={unit+index} select={selectNft}/>
                                         </LazyLoadComponent>
@@ -188,9 +188,13 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                     onClick={(e) => {
                                             e.preventDefault()
                                             let assets: Assets | null = null
-                                            if (actionName !== 'Withdraw' || avialableNftUnits !== selectedUnits) {
+                                            if ((actionName === 'Withdraw' && availableNftUnits === selectedUnits) || actionName === 'Deposit') {
+                                                const units = 
+                                                    actionName === 'Deposit' && (!selectedUnits || selectedUnits.length < 1) ? 
+                                                        availableNftUnits : selectedUnits
+                                                
                                                 assets = {}
-                                                selectedUnits.forEach(unit => {
+                                                units.forEach(unit => {
                                                     if(unit && assets) assets[unit] = BigInt(1)
                                                 })
                                             }
@@ -200,7 +204,7 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                         }
                                     } 
                                 >
-                                    {actionName}
+                                    {actionName} {!selectedUnits || selectedUnits.length < 1 ? 'All' : ''}
                                 </button>
                             </div>
                         </>
