@@ -228,9 +228,16 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                             <div className="stat-title">Staked</div>
                             <div className="stat-value">{userStaked || <Skeleton baseColor='#2A4B89' />}</div>
                             <div className="stat-actions">
-                                <StakeModalBtn
+                                {/* <StakeModalBtn
                                     contractAddress={stakingAddress}
                                     stakingUnit={poolInfo.stakingUnit}
+                                    enabled={walletEnabled}
+                                    action={withdraw}
+                                    actionName="Withdraw"
+                                /> */}
+                                <NftStakeModalBtn
+                                    contractAddress={stakingAddress}
+                                    policyid={'221dd4233ea90cdd7ca5ddfae94f5adf20bb7d16c1ffde1230f9371b'}
                                     enabled={walletEnabled}
                                     action={withdraw}
                                     actionName="Withdraw"

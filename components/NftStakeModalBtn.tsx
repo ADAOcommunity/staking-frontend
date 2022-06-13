@@ -107,7 +107,7 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
             setMsg(`Error: ${err.info || err.message || err || ''}`)
         }
     }
-    
+
     // const selectAll = (select: boolean = true) => {
     //     if(select)
     //         setSelectedUnits(avialableNftUnits)
@@ -187,10 +187,15 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                     disabled={!enabled}
                                     onClick={(e) => {
                                             e.preventDefault()
-                                            let assets: any = null
-                                            // if (actionName != 'Withdraw' || tokenAmount !== usersLpTokens) {
-                                            //     assets = {[stakingUnit]: BigInt(tokenAmount)}
-                                            // } 
+                                            let assets: Assets | null = null
+                                            if (actionName !== 'Withdraw' || avialableNftUnits !== selectedUnits) {
+                                                assets = null
+                                            } else {
+                                                assets = {}
+                                                selectedUnits.forEach(unit => {
+                                                    if(unit && assets) assets[unit] = BigInt(1)
+                                                })
+                                            }
                                             doAction(
                                                 action(assets)
                                             )

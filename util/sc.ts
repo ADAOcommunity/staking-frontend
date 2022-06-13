@@ -116,7 +116,7 @@ const getStakedUnitAmount = async (utxos: UTxO[], pkh: string, stakingUnit: stri
 
 const getStakedTotalAmount = async (utxos: UTxO[], stakingUnit: string) => {
     let total: bigint = 0n;
-    utxos.forEach(u => total += (u.assets[stakingUnit] as bigint))
+    utxos.forEach(u => { if(u.assets[stakingUnit]) total += BigInt(u.assets[stakingUnit].toString()) })
     return total
 }
 
