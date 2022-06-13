@@ -14,7 +14,7 @@ export default function NftPreview(props: {unit: string, select: (unit: string) 
     const nftName = Buffer.from(props.unit.slice(56), 'hex').toString('ascii')
 
     const selectImage = () => {
-        props.select(props.unit)
+        props.select(props.unit, !selected)
         setSelected(!selected)
     }
 
@@ -35,18 +35,19 @@ export default function NftPreview(props: {unit: string, select: (unit: string) 
     })
 
     return (
-        <div className="flex justify-center text-center items-center flex-col" onClick={selectImage}>
-            {!image ? 
-                <Skeleton className='w-36 h-36'/> :
-                <img className='w-36 h-36' src={image}/>
-            }
-            {!selected ? 
-                <></> :
-                <div className='absolute bg-slate-900 opacity-40 w-36 h-36'>
-                    {/* translate-x-1/2 -translate-y-1/2 */}
-                </div>
-            }
-            <p className='text-lg'>{nftName}</p>
+        <div className="flex relative justify-center text-center items-center object-center flex-col" onClick={selectImage}>
+                {!image ? 
+                    <Skeleton className='w-36 h-36'/> :
+                    <img className='w-36 h-36 rounded-lg' src={image}/>
+                }
+                {!selected ? 
+                    <></> :
+                    <div className='absolute bg-slate-900 opacity-60 w-36 h-[10.75rem] rounded-lg'>
+                        {/* translate-x-1/2 -translate-y-1/2 */}
+                    </div>
+                }
+                <p className='text-lg'>{nftName}</p>
+            
         </div>
     )
 }

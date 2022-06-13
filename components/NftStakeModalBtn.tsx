@@ -36,14 +36,14 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
         }
     }
 
-    const selectNft = (unit: string) => {
-        if(selectedUnits.includes(unit)) {
+    const selectNft = (unit: string, select: boolean = true) => {
+        if(select) {
             setSelectedUnits(
-                [...selectedUnits].filter(val => val !== unit)
+                [...selectedUnits].concat(unit)
             )
         } else {
             setSelectedUnits(
-                [...selectedUnits].concat(unit)
+                [...selectedUnits].filter(val => val !== unit)
             )
         }
     }
