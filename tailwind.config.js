@@ -22,12 +22,12 @@ module.exports = {
           neutral: "#b4c4d8",
           "base-200": "#00487d",
           "base-100": "#b4c4d8",
-          "base-content": "#00487d"
+          "base-content": "#00487d",
         },
       },
       "dark",
       "cupcake",
     ],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require('tailwind-scrollbar')],
 }
