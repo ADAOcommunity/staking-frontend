@@ -107,6 +107,13 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
             setMsg(`Error: ${err.info || err.message || err || ''}`)
         }
     }
+    
+    // const selectAll = (select: boolean = true) => {
+    //     if(select)
+    //         setSelectedUnits(avialableNftUnits)
+    //     else
+    //         setSelectedUnits([])
+    // }
 
     return (
         <>
@@ -150,29 +157,49 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                 {/* <SearchInput/> */}
                             </div>
                             <div className="grid grid-cols-3 md:grid-cols-5 scrollbar-thin my-4 scrollbar-thumb-sky-900 scrollbar-track-sky-700 overflow-y-scroll">
-                                {avialableNftUnits.map(unit =>
-                                    <LazyLoadComponent delayMethod="debounce" delayTime={600}>
-                                        <NftPreview unit={unit} key={unit} select={selectNft}/>
-                                    </LazyLoadComponent>
+                                {avialableNftUnits.map((unit, index) => {
+                                        return <LazyLoadComponent delayMethod="debounce" delayTime={400}>
+                                            <NftPreview unit={unit} key={unit+index} select={selectNft}/>
+                                        </LazyLoadComponent>
+                                    }
                                 )}
                             </div>
-                            <button 
-                                className="btn btn-outline text-neutral-content ml-auto max-w-xs"
-                                disabled={!enabled}
-                                onClick={(e) => {
-                                        e.preventDefault()
-                                        let assets: any = null
-                                        // if (actionName != 'Withdraw' || tokenAmount !== usersLpTokens) {
-                                        //     assets = {[stakingUnit]: BigInt(tokenAmount)}
-                                        // } 
-                                        doAction(
-                                            action(assets)
-                                        )
-                                    }
-                                } 
-                            >
-                                {actionName}
-                            </button>
+                            <div className="flex">
+                                {/* <button 
+                                    className="btn btn-outline text-neutral-content max-w-xs"
+                                    disabled={!enabled}
+                                    onClick={(e) => {
+                                            e.preventDefault()
+                                            let assets: any = null
+                                            // if (actionName != 'Withdraw' || tokenAmount !== usersLpTokens) {
+                                            //     assets = {[stakingUnit]: BigInt(tokenAmount)}
+                                            // } 
+                                            doAction(
+                                                action(assets)
+                                            )
+                                        }
+                                    } 
+                                >
+                                    {`Select all`}
+                                </button> */}
+                                <button 
+                                    className="btn btn-outline text-neutral-content ml-auto max-w-xs"
+                                    disabled={!enabled}
+                                    onClick={(e) => {
+                                            e.preventDefault()
+                                            let assets: any = null
+                                            // if (actionName != 'Withdraw' || tokenAmount !== usersLpTokens) {
+                                            //     assets = {[stakingUnit]: BigInt(tokenAmount)}
+                                            // } 
+                                            doAction(
+                                                action(assets)
+                                            )
+                                        }
+                                    } 
+                                >
+                                    {actionName}
+                                </button>
+                            </div>
                         </>
                     }
                 </label>
