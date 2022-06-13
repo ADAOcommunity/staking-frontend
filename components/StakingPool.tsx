@@ -12,9 +12,8 @@ import initializeLucid from '../util/lucid';
 import usePoolData from '../util/usePoolData';
 import { StakingPoolInfo } from '../types';
 import { DEPOSIT_DATUM, getStakingAddress, PUB_KEY_LABEL, searchStakes, subAssetsFromUtxos, WITHDRAW } from '../util/sc';
-import { useEffect } from 'react';
+import NftStakeModalBtn from './NftStakeModalBtn';
 
-//const request = require('request')
 
 type HarvestReqBody = {
     poolIndex: number,
@@ -39,7 +38,7 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
         if(await loadedLucid.awaitTx(txhash)) load()
     }
     const deposit = async (value: Assets | null) => {
-        const loadedLucid = await initializeLucid(walletName)
+        await initializeLucid(walletName)
         const pkh = pkhStore
         if(!value) throw 'No assets chosen for deposit'
         if (!pkh) throw 'No key hash for a user, try connecting your wallet again'
@@ -236,9 +235,16 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                                     action={withdraw}
                                     actionName="Withdraw"
                                 />
-                                <StakeModalBtn
+                                {/* <StakeModalBtn
                                     contractAddress={stakingAddress}
                                     stakingUnit={poolInfo.stakingUnit}
+                                    enabled={walletEnabled}
+                                    action={deposit}
+                                    actionName="Deposit"
+                                /> */}
+                                <NftStakeModalBtn
+                                    contractAddress={stakingAddress}
+                                    policyid={'74f43bdf645aaeb25f39c6392cdb771ff4eb4da0c017cc183c490b8f'}
                                     enabled={walletEnabled}
                                     action={deposit}
                                     actionName="Deposit"
