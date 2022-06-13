@@ -244,7 +244,7 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                                 /> */}
                                 <NftStakeModalBtn
                                     contractAddress={stakingAddress}
-                                    policyid={'74f43bdf645aaeb25f39c6392cdb771ff4eb4da0c017cc183c490b8f'}
+                                    policyid={'221dd4233ea90cdd7ca5ddfae94f5adf20bb7d16c1ffde1230f9371b'}
                                     enabled={walletEnabled}
                                     action={deposit}
                                     actionName="Deposit"

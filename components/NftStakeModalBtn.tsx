@@ -8,6 +8,7 @@ import { useStoreState } from "../util/store";
 import { Assets} from 'lucid-cardano'
 import { DEPOSIT_DATUM_HASH } from "../util/sc";
 import NftPreview from "./NftPreview";
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 type ActionState = "loading" | "success" | "error"
 export default function StakeModalBtn({ actionName, enabled, policyid, contractAddress, action }: { actionName: string, enabled: boolean, policyid: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
@@ -146,11 +147,13 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                             <h3 className="text-lg font-bold">Select NFTs&nbsp;{actionName == 'Withdraw' ? 'to withdraw' : 'to stake'}</h3>
                             <div className="flex-row">
                                 {/* <FilterSelect/> */}
-                                <SearchInput/>
+                                {/* <SearchInput/> */}
                             </div>
-                            <div className="grid grid-cols-3 md:grid-cols-5">
+                            <div className="grid grid-cols-3 md:grid-cols-5 scrollbar-thin my-4 scrollbar-thumb-sky-900 scrollbar-track-sky-700 overflow-y-scroll">
                                 {avialableNftUnits.map(unit =>
-                                    <NftPreview unit={unit} key={unit} select={selectNft}/>
+                                    <LazyLoadComponent delayMethod="debounce" delayTime={600}>
+                                        <NftPreview unit={unit} key={unit} select={selectNft}/>
+                                    </LazyLoadComponent>
                                 )}
                             </div>
                             <button 
