@@ -189,8 +189,6 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                                             e.preventDefault()
                                             let assets: Assets | null = null
                                             if (actionName !== 'Withdraw' || avialableNftUnits !== selectedUnits) {
-                                                assets = null
-                                            } else {
                                                 assets = {}
                                                 selectedUnits.forEach(unit => {
                                                     if(unit && assets) assets[unit] = BigInt(1)
