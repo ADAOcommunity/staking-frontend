@@ -54,8 +54,8 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
         setState('loading')
         setMsg("Waiting...")
         try {
-            const Lucid = await initializeLucid(walletName)
-            const utxos = await Lucid.utxosAt(Lucid.wallet.address)
+            const Lucid = await initializeLucid(await window.cardano[walletName].enable())
+            const utxos = await Lucid.utxosAt(await Lucid.wallet.address())
             let nftUnits: string[] = []
             utxos.forEach(u => 
                 Object.keys(u.assets).forEach(unit => { 
@@ -81,7 +81,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
         setState('loading')
         setMsg("Waiting...")
         try {
-            const Lucid = await initializeLucid(walletName)
+            const Lucid = await initializeLucid(await window.cardano[walletName].enable())
             const utxos = await Lucid.utxosAt(contractAddress)
             const pkh = pkhStore
             if(!pkh) throw 'No key hash for a user, try connecting your wallet again'
@@ -144,6 +144,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                         :
                         <>
                             <h3 className="text-lg font-bold">Select NFTs&nbsp;{actionName == 'Withdraw' ? 'to withdraw' : 'to stake'}</h3>
+                            <p>Click on image preview to select</p>
                             <div className="flex-row">
                                 {/* <FilterSelect/> */}
                                 {/* <SearchInput/> */}

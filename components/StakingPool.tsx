@@ -34,18 +34,18 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     
 
     const awaitTx = async (txhash: string) => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         if(await loadedLucid.awaitTx(txhash)) load()
     }
     const deposit = async (value: Assets | null) => {
-        await initializeLucid(walletName)
+        await initializeLucid(await window.cardano[walletName].enable())
         const pkh = pkhStore
         if(!value) throw 'No assets chosen for deposit'
         if (!pkh) throw 'No key hash for a user, try connecting your wallet again'
         let tx: TxComplete
         tx = await depositTx(pkh, value);
 
-        const signedTx = (await tx.sign()).complete();
+        const signedTx = await (tx.sign()).complete();
 
         const txhash = await signedTx.submit();
         awaitTx(txhash)
@@ -55,11 +55,11 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
         return withdrawAct(false, value)
     }
     const harvest = async () => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         console.log(`About to call /api/0/${loadedLucid.wallet.address}/harvestTx`)
         let b : HarvestReqBody = {
             poolIndex: poolI,
-            address: loadedLucid.wallet.address
+            address: await loadedLucid.wallet.address()
         }
         let txHex = null
         let res = null
@@ -107,7 +107,7 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
         return witness;
     }
     const withdrawAct = async (harvest: boolean, value: Assets | null = null) => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         const pkh = pkhStore
         if (!pkh) throw 'No key hash for a user, try connecting your wallet again'
 
@@ -126,9 +126,9 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
             return utxo
         })
 
-        const tx: TxComplete = await withdrawTx(utxos, loadedLucid.wallet.address, pkh, harvest, value);
+        const tx: TxComplete = await withdrawTx(utxos, await loadedLucid.wallet.address(), pkh, harvest, value);
 
-        const signedTx = (await tx.sign()).complete();
+        const signedTx = await (tx.sign()).complete();
 
         const txhash = await signedTx.submit();
         awaitTx(txhash)
@@ -140,7 +140,8 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     const stakingAddress: Address = getStakingAddress(poolInfo.script.script)
 
     async function withdrawTx(utxos: UTxO[], ad: string, pk: PaymentKeyHash, onlyCollect: boolean, withdrawValue: Assets | null): Promise<TxComplete> {
-        let tx = Tx.new()
+        const lucid = await initializeLucid(await window.cardano[walletName].enable())
+        let tx = new Tx(lucid)
             .collectFrom(utxos, WITHDRAW())
             .attachSpendingValidator(stakingScript)
             .addSigner(ad)
@@ -171,11 +172,13 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     }
 
     async function depositTx(pkhf: string, value: Assets) {
-        return await Tx.new()
+        const lucid = await initializeLucid(await window.cardano[walletName].enable())
+        return await (
+            new Tx(lucid)
             .attachMetadataWithConversion(PUB_KEY_LABEL, { 0: pkhf })
             .payToAddress(poolInfo.distAddress, {'lovelace': 999998n})
             .payToContract(stakingAddress, DEPOSIT_DATUM(pkhf), value)
-            .complete();
+        ).complete();
     }
 
     const copyToClipboard = (str: string) => {

@@ -16,7 +16,7 @@ export default function WalletModalBtn() {
         }
         const walletStoreObj = {connected: true, name: wallet}
         setWallet(walletStoreObj)
-        const add = (await initializeLucid(wallet)).wallet.address
+        const add = await (await initializeLucid(await window.cardano[wallet].enable())).wallet.address()
         const pkh = C.Address.from_bech32(add).as_base()?.payment_cred().to_keyhash()?.to_hex();
         if(pkh) setPkh(pkh)
     }
