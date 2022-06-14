@@ -178,7 +178,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                                         }
                                     } 
                                 >
-                                    {actionName} {selectedUnits.length < 1 ? 'All' : ''}
+                                    {actionName} {!selectedUnits || selectedUnits.length < 1 ? 'All' : ''}
                                 </button>
                             </div>
                         </>
