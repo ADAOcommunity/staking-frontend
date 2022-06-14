@@ -12,9 +12,8 @@ import initializeLucid from '../util/lucid';
 import usePoolData from '../util/usePoolData';
 import { StakingPoolInfo } from '../types';
 import { DEPOSIT_DATUM, getStakingAddress, PUB_KEY_LABEL, searchStakes, subAssetsFromUtxos, WITHDRAW } from '../util/sc';
-import { useEffect } from 'react';
+import NftStakeModalBtn from './NftStakeModalBtn';
 
-//const request = require('request')
 
 type HarvestReqBody = {
     poolIndex: number,
@@ -29,24 +28,24 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     const pkhStore = useStoreState(state => state.pkh)
 
     const { totalStaked, totalStakers, userStaked, pendingRewards, estimatedPerEpochRewards, load }
-        = usePoolData(poolInfo.script.script, BigInt(poolInfo.rewardPerEpochQt), poolInfo.stakingUnit, poolInfo.harvestUnit, poolInfo.poolIndex)
+        = usePoolData(poolInfo.script.script, BigInt(poolInfo.rewardPerEpochQt), poolInfo.stakingUnit, poolInfo.stakingPolicy, poolInfo.harvestUnit, poolInfo.poolIndex)
     
     const poolI = poolInfo.poolIndex != null ? poolInfo.poolIndex : -1
     
 
     const awaitTx = async (txhash: string) => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         if(await loadedLucid.awaitTx(txhash)) load()
     }
     const deposit = async (value: Assets | null) => {
-        const loadedLucid = await initializeLucid(walletName)
+        await initializeLucid(await window.cardano[walletName].enable())
         const pkh = pkhStore
         if(!value) throw 'No assets chosen for deposit'
         if (!pkh) throw 'No key hash for a user, try connecting your wallet again'
         let tx: TxComplete
         tx = await depositTx(pkh, value);
 
-        const signedTx = (await tx.sign()).complete();
+        const signedTx = await (tx.sign()).complete();
 
         const txhash = await signedTx.submit();
         awaitTx(txhash)
@@ -56,11 +55,11 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
         return withdrawAct(false, value)
     }
     const harvest = async () => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         console.log(`About to call /api/0/${loadedLucid.wallet.address}/harvestTx`)
         let b : HarvestReqBody = {
             poolIndex: poolI,
-            address: loadedLucid.wallet.address
+            address: await loadedLucid.wallet.address()
         }
         let txHex = null
         let res = null
@@ -108,7 +107,7 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
         return witness;
     }
     const withdrawAct = async (harvest: boolean, value: Assets | null = null) => {
-        const loadedLucid = await initializeLucid(walletName)
+        const loadedLucid = await initializeLucid(await window.cardano[walletName].enable())
         const pkh = pkhStore
         if (!pkh) throw 'No key hash for a user, try connecting your wallet again'
 
@@ -127,9 +126,9 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
             return utxo
         })
 
-        const tx: TxComplete = await withdrawTx(utxos, loadedLucid.wallet.address, pkh, harvest, value);
+        const tx: TxComplete = await withdrawTx(utxos, await loadedLucid.wallet.address(), pkh, harvest, value);
 
-        const signedTx = (await tx.sign()).complete();
+        const signedTx = await (tx.sign()).complete();
 
         const txhash = await signedTx.submit();
         awaitTx(txhash)
@@ -141,7 +140,8 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     const stakingAddress: Address = getStakingAddress(poolInfo.script.script)
 
     async function withdrawTx(utxos: UTxO[], ad: string, pk: PaymentKeyHash, onlyCollect: boolean, withdrawValue: Assets | null): Promise<TxComplete> {
-        let tx = Tx.new()
+        const lucid = await initializeLucid(await window.cardano[walletName].enable())
+        let tx = new Tx(lucid)
             .collectFrom(utxos, WITHDRAW())
             .attachSpendingValidator(stakingScript)
             .addSigner(ad)
@@ -172,11 +172,13 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     }
 
     async function depositTx(pkhf: string, value: Assets) {
-        return await Tx.new()
+        const lucid = await initializeLucid(await window.cardano[walletName].enable())
+        return await (
+            new Tx(lucid)
             .attachMetadataWithConversion(PUB_KEY_LABEL, { 0: pkhf })
             .payToAddress(poolInfo.distAddress, {'lovelace': 999998n})
             .payToContract(stakingAddress, DEPOSIT_DATUM(pkhf), value)
-            .complete();
+        ).complete();
     }
 
     const copyToClipboard = (str: string) => {
@@ -229,20 +231,39 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                             <div className="stat-title">Staked</div>
                             <div className="stat-value">{userStaked || <Skeleton baseColor='#2A4B89' />}</div>
                             <div className="stat-actions">
-                                <StakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    stakingUnit={poolInfo.stakingUnit}
-                                    enabled={walletEnabled}
-                                    action={withdraw}
-                                    actionName="Withdraw"
-                                />
-                                <StakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    stakingUnit={poolInfo.stakingUnit}
-                                    enabled={walletEnabled}
-                                    action={deposit}
-                                    actionName="Deposit"
-                                />
+                                { poolInfo.type === 'NFT' ?  <>
+                                        <NftStakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            policyid={poolInfo.stakingPolicy ? poolInfo.stakingPolicy : ''}
+                                            enabled={walletEnabled}
+                                            action={withdraw}
+                                            actionName="Withdraw"
+                                        />
+                                        <NftStakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            policyid={poolInfo.stakingPolicy ? poolInfo.stakingPolicy : ''}
+                                            enabled={walletEnabled}
+                                            action={deposit}
+                                            actionName="Deposit"
+                                        />
+                                    </>
+                                    : <>
+                                        <StakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            stakingUnit={poolInfo.stakingUnit ? poolInfo.stakingUnit : ''}
+                                            enabled={walletEnabled}
+                                            action={withdraw}
+                                            actionName="Withdraw"
+                                        />
+                                        <StakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            stakingUnit={poolInfo.stakingUnit ? poolInfo.stakingUnit : ''}
+                                            enabled={walletEnabled}
+                                            action={deposit}
+                                            actionName="Deposit"
+                                        /> 
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>

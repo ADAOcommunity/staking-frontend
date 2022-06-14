@@ -102,7 +102,7 @@ const getAllUtxos = async (walletName: string, contractAddress: string) => {
     return await Lucid.utxosAt(contractAddress)
 }
 
-const getStakedUnitAmount = async (utxos: UTxO[], pkh: string, stakingUnit: string) => {
+const getStakedUnitAmount = (utxos: UTxO[], pkh: string, stakingUnit: string) => {
     let total: bigint = 0n;
     if(!pkh) throw 'No key hash for a user, try connecting your wallet again'
     const ownedUtxos = utxos.filter((u) => {
@@ -114,13 +114,48 @@ const getStakedUnitAmount = async (utxos: UTxO[], pkh: string, stakingUnit: stri
     return total
 }
 
-const getStakedTotalAmount = async (utxos: UTxO[], stakingUnit: string) => {
+const getStakedNftsAmount = (utxos: UTxO[], pkh: string, stakingPolicy: string) => {
     let total: bigint = 0n;
-    utxos.forEach(u => total += (u.assets[stakingUnit] as bigint))
+    if(!pkh) throw 'No key hash for a user, try connecting your wallet again'
+    const ownedUtxos = utxos.filter((u) => {
+        return u.datumHash == DEPOSIT_DATUM_HASH(
+            pkh
+        ).to_hex()
+    });
+    console.log('ownedUtxos.length')
+    console.log(ownedUtxos.length)
+    ownedUtxos.forEach(u => { 
+        Object.keys(u.assets).forEach(unit => {
+            if(unit.startsWith(stakingPolicy)) {
+                total += 1n
+            }
+        })
+    })
     return total
 }
 
-const getStakersCount = async (utxos: UTxO[]) => {
+const getStakedTotalAmount = (utxos: UTxO[], stakingUnit: string) => {
+    let total: bigint = 0n;
+    utxos.forEach(u => { if(u.assets[stakingUnit]) total += BigInt(u.assets[stakingUnit].toString()) })
+    return total
+}
+
+const getStakedNftsTotalAmount = (utxos: UTxO[], stakingPolicy: string) => {
+    let total: bigint = 0n;
+    console.log('getStakedNftsTotalAmount')
+    console.log(utxos)
+    utxos.forEach(u => {
+        Object.keys(u.assets).forEach(unit => {
+            if(unit.startsWith(stakingPolicy)) {
+                total += 1n
+            }
+        }) 
+    })
+    return total
+}
+
+
+const getStakersCount = (utxos: UTxO[]) => {
     const datumHashes = utxos.map((u) => {
         if(u && u.datumHash) return u.datumHash
     })
@@ -165,4 +200,7 @@ const getStakingAddress = (scriptHex: string, testnet: boolean = true) => C.Ente
 
 export { PUB_KEY_LABEL, DATUM_LABEL, DATUM_TYPE, DEPOSIT_DATUM, DEPOSIT_DATUM_HASH, WITHDRAW }
 
-export{ addAssets, searchStakes, subAssetsFromUtxos, getStakedUnitAmount, getAllUtxos, getStakingAddress, getStakersCount, getStakedTotalAmount }
+export { 
+    addAssets, searchStakes, subAssetsFromUtxos, getStakedUnitAmount, getAllUtxos,
+    getStakingAddress, getStakersCount, getStakedTotalAmount, getStakedNftsAmount, getStakedNftsTotalAmount
+}

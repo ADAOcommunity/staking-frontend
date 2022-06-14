@@ -1,9 +1,12 @@
 import { SpendingValidator } from "lucid-cardano"
 
+
 export type PoolInfo = {
   contractAddress: string
   distAddress: string
-  stakingUnit: string
+  type: 'NFT' | 'FT'
+  stakingUnit: string | undefined
+  stakingPolicy: string | undefined
   harvestUnit: string
   script: SpendingValidator
   maxSize: number
