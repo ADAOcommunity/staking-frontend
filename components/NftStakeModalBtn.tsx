@@ -123,6 +123,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                 } else {
                     setMsg("")
                     setState(undefined)
+                    setSelectedUnits([])
                 }
             }} className="modal-toggle"/>
             <label htmlFor={`${actionName}-NFT-modal`} className="modal cursor-pointer">
@@ -161,13 +162,15 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                                     disabled={!enabled}
                                     onClick={(e) => {
                                             e.preventDefault()
-                                            let assets: Assets | null = null
-                                            if ((actionName === 'Withdraw' && availableNftUnits === selectedUnits) || actionName === 'Deposit') {
-                                                const units = 
-                                                    actionName === 'Deposit' && (!selectedUnits || selectedUnits.length < 1) ? 
-                                                        availableNftUnits : selectedUnits
-                                                
-                                                assets = {}
+                                            let assets: Assets | null = {}
+                                            let units = selectedUnits
+                                            if(!selectedUnits || selectedUnits.length < 1 ) {
+                                                if(actionName === 'Withdraw') assets = null
+                                                else {
+                                                    units = availableNftUnits
+                                                }
+                                            } 
+                                            if(assets) {
                                                 units.forEach(unit => {
                                                     if(unit && assets) assets[unit] = BigInt(1)
                                                 })
@@ -175,6 +178,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                                             doAction(
                                                 action(assets)
                                             )
+                                            
                                         }
                                     } 
                                 >
