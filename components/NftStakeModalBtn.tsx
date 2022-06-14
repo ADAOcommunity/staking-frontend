@@ -8,7 +8,6 @@ import { useStoreState } from "../util/store";
 import { Assets} from 'lucid-cardano'
 import { DEPOSIT_DATUM_HASH } from "../util/sc";
 import NftPreview from "./NftPreview";
-import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 type ActionState = "loading" | "success" | "error"
 export default function NftStakeModalBtn({ actionName, enabled, policyid, contractAddress, action }: { actionName: string, enabled: boolean, policyid: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
@@ -108,13 +107,6 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
         }
     }
 
-    // const selectAll = (select: boolean = true) => {
-    //     if(select)
-    //         setSelectedUnits(availableNftUnits)
-    //     else
-    //         setSelectedUnits([])
-    // }
-
     return (
         <>
             {enabled ? 
@@ -158,30 +150,11 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                             </div>
                             <div className="grid grid-cols-3 md:grid-cols-5 scrollbar-thin my-4 scrollbar-thumb-sky-900 scrollbar-track-sky-700 overflow-y-scroll">
                                 {availableNftUnits.map((unit, index) => {
-                                        return <LazyLoadComponent delayMethod="debounce" delayTime={400}>
-                                            <NftPreview unit={unit} key={unit+index} select={selectNft}/>
-                                        </LazyLoadComponent>
+                                        return  <NftPreview unit={unit} key={unit+index} select={selectNft}/>
                                     }
                                 )}
                             </div>
                             <div className="flex">
-                                {/* <button 
-                                    className="btn btn-outline text-neutral-content max-w-xs"
-                                    disabled={!enabled}
-                                    onClick={(e) => {
-                                            e.preventDefault()
-                                            let assets: any = null
-                                            // if (actionName != 'Withdraw' || tokenAmount !== usersLpTokens) {
-                                            //     assets = {[stakingUnit]: BigInt(tokenAmount)}
-                                            // } 
-                                            doAction(
-                                                action(assets)
-                                            )
-                                        }
-                                    } 
-                                >
-                                    {`Select all`}
-                                </button> */}
                                 <button 
                                     className="btn btn-outline text-neutral-content ml-auto max-w-xs"
                                     disabled={!enabled}
@@ -204,7 +177,7 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
                                         }
                                     } 
                                 >
-                                    {actionName} {!selectedUnits || selectedUnits.length < 1 ? 'All' : ''}
+                                    {actionName} {selectedUnits.length < 1 ? 'All' : ''}
                                 </button>
                             </div>
                         </>
@@ -214,8 +187,6 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
         </>
     )
 }
-
-
 
 // const FilterSelect = (optionValueMap: {[option: string]: string}) => {
 //     return (
@@ -254,17 +225,17 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
 //     )
 // }
 
-const SearchInput = () => {
-    return (
-        <div className="flex justify-center">
-            <div className="mb-3">
-                <div className="input-group relative flex items-stretch w-full mb-4 flex-row">
-                    <input type="search" placeholder="Search" aria-label="Search" aria-describedby="button-addon3"
-                        className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                    />
-                    <button className="btn inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" type="button" id="button-addon3">Search</button>
-                </div>
-            </div>
-        </div>
-    )
-}
+// const SearchInput = () => {
+//     return (
+//         <div className="flex justify-center">
+//             <div className="mb-3">
+//                 <div className="input-group relative flex items-stretch w-full mb-4 flex-row">
+//                     <input type="search" placeholder="Search" aria-label="Search" aria-describedby="button-addon3"
+//                         className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+//                     />
+//                     <button className="btn inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out" type="button" id="button-addon3">Search</button>
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
