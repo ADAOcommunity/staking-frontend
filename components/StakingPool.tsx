@@ -28,7 +28,7 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
     const pkhStore = useStoreState(state => state.pkh)
 
     const { totalStaked, totalStakers, userStaked, pendingRewards, estimatedPerEpochRewards, load }
-        = usePoolData(poolInfo.script.script, BigInt(poolInfo.rewardPerEpochQt), poolInfo.stakingUnit, poolInfo.harvestUnit, poolInfo.poolIndex)
+        = usePoolData(poolInfo.script.script, BigInt(poolInfo.rewardPerEpochQt), poolInfo.stakingUnit, poolInfo.stakingPolicy, poolInfo.harvestUnit, poolInfo.poolIndex)
     
     const poolI = poolInfo.poolIndex != null ? poolInfo.poolIndex : -1
     
@@ -228,34 +228,39 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                             <div className="stat-title">Staked</div>
                             <div className="stat-value">{userStaked || <Skeleton baseColor='#2A4B89' />}</div>
                             <div className="stat-actions">
-                                {/* <StakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    stakingUnit={poolInfo.stakingUnit}
-                                    enabled={walletEnabled}
-                                    action={withdraw}
-                                    actionName="Withdraw"
-                                /> */}
-                                <NftStakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    policyid={'221dd4233ea90cdd7ca5ddfae94f5adf20bb7d16c1ffde1230f9371b'}
-                                    enabled={walletEnabled}
-                                    action={withdraw}
-                                    actionName="Withdraw"
-                                />
-                                {/* <StakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    stakingUnit={poolInfo.stakingUnit}
-                                    enabled={walletEnabled}
-                                    action={deposit}
-                                    actionName="Deposit"
-                                /> */}
-                                <NftStakeModalBtn
-                                    contractAddress={stakingAddress}
-                                    policyid={'221dd4233ea90cdd7ca5ddfae94f5adf20bb7d16c1ffde1230f9371b'}
-                                    enabled={walletEnabled}
-                                    action={deposit}
-                                    actionName="Deposit"
-                                />
+                                { poolInfo.type === 'NFT' ?  <>
+                                        <NftStakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            policyid={poolInfo.stakingPolicy ? poolInfo.stakingPolicy : ''}
+                                            enabled={walletEnabled}
+                                            action={withdraw}
+                                            actionName="Withdraw"
+                                        />
+                                        <NftStakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            policyid={poolInfo.stakingPolicy ? poolInfo.stakingPolicy : ''}
+                                            enabled={walletEnabled}
+                                            action={deposit}
+                                            actionName="Deposit"
+                                        />
+                                    </>
+                                    : <>
+                                        <StakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            stakingUnit={poolInfo.stakingUnit ? poolInfo.stakingUnit : ''}
+                                            enabled={walletEnabled}
+                                            action={withdraw}
+                                            actionName="Withdraw"
+                                        />
+                                        <StakeModalBtn
+                                            contractAddress={stakingAddress}
+                                            stakingUnit={poolInfo.stakingUnit ? poolInfo.stakingUnit : ''}
+                                            enabled={walletEnabled}
+                                            action={deposit}
+                                            actionName="Deposit"
+                                        /> 
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>

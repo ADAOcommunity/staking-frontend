@@ -1,11 +1,11 @@
 import { UTxO } from "lucid-cardano";
 import { useEffect, useState } from "react";
 import initializeLucid from "./lucid";
-import { getAllUtxos, getStakedUnitAmount, getStakedTotalAmount, getStakersCount, getStakingAddress } from "./sc";
+import { getAllUtxos, getStakedUnitAmount, getStakedTotalAmount, getStakersCount, getStakingAddress, getStakedNftsAmount, getStakedNftsTotalAmount } from "./sc";
 import { useStoreState } from "./store";
 import { API_URL } from '../resources/apiUrl'
 
-export default function usePoolData(scriptHex: string, perEpochTotal: bigint, stakeUnit: string, harvestUnit: string, poolIndex: number){
+export default function usePoolData(scriptHex: string, perEpochTotal: bigint, stakeUnit: string | undefined, stakingPolicy: string | undefined,  harvestUnit: string, poolIndex: number){
     //string '0' shows 0 in UI, Number 0 shows loading skeleton for dynamic values
     const zero = '0' //0
     const [totalStaked, setTotalStaked] = useState<string | 0>(zero)
@@ -32,18 +32,37 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
         return getAllUtxos(walletName, contractAddress)
     }
 
-    const getUserStaked = async (utxos: UTxO[]) => {
-        let res: bigint | string = await getStakedUnitAmount(utxos, pkhStore, stakeUnit)
+    const getUserStaked = (utxos: UTxO[]) => {
+        console.log('getUserStaked')
+        console.log('utxos, pkhStore, stakingPolicy')
+        console.log(utxos, pkhStore, stakingPolicy)
+        let res: bigint | string = ''
+        if(stakeUnit)
+            res = getStakedUnitAmount(utxos, pkhStore, stakeUnit)
+        else if(stakingPolicy) {
+            console.log('stakingPolicy pool amount:')
+            res = getStakedNftsAmount(utxos, pkhStore, stakingPolicy)
+            console.log(res)
+
+        }
+            
         if(!res) res = '0'
         setUserStaked(res.toString())
     }
-    const getTotalStakers = async (utxos: UTxO[]) => {
-        let res: number | string = await getStakersCount(utxos)
+
+    const getTotalStakers = (utxos: UTxO[]) => {
+        let res: number | string = getStakersCount(utxos)
         if(!res || res === 0) res = '0'
         setTotalStakers(res.toString())
-    } 
-    const getTotalStaked = async (utxos: UTxO[]) => {
-        let res: bigint | string = await getStakedTotalAmount(utxos, stakeUnit)
+    }
+
+    const getTotalStaked = (utxos: UTxO[]) => {
+        let res: bigint | string = ''
+        if(stakeUnit)
+            res = getStakedTotalAmount(utxos, stakeUnit)
+        else if(stakingPolicy)
+            res = getStakedNftsTotalAmount(utxos, stakingPolicy)
+
         if(!res) res = '0'
         setTotalStaked(res.toString())
     }

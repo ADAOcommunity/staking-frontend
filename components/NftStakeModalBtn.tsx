@@ -11,7 +11,7 @@ import NftPreview from "./NftPreview";
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 type ActionState = "loading" | "success" | "error"
-export default function StakeModalBtn({ actionName, enabled, policyid, contractAddress, action }: { actionName: string, enabled: boolean, policyid: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
+export default function NftStakeModalBtn({ actionName, enabled, policyid, contractAddress, action }: { actionName: string, enabled: boolean, policyid: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
     const [availableNftUnits, setNftUnits] = useState<string[]>([])
     const [selectedUnits, setSelectedUnits] = useState<string[]>([])
     const [state, setState] = useState<ActionState>()
@@ -118,10 +118,10 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
     return (
         <>
             {enabled ? 
-                <label htmlFor={`${actionName}-modal`} className="btn btn-sm mr-1 modal-button">{actionName}</label> :
+                <label htmlFor={`${actionName}-NFT-modal`} className="btn btn-sm mr-1 modal-button">{actionName}</label> :
                 <button disabled className="btn btn-sm mr-1 modal-button">{actionName}</button>
             }
-            <input type="checkbox" id={`${actionName}-modal`} onChange={(e) => {
+            <input type="checkbox" id={`${actionName}-NFT-modal`} onChange={(e) => {
                 if(e.target.checked){
                     if (actionName == 'Withdraw') {
                         loadAvailableNftsToWithdraw()
@@ -133,7 +133,7 @@ export default function StakeModalBtn({ actionName, enabled, policyid, contractA
                     setState(undefined)
                 }
             }} className="modal-toggle"/>
-            <label htmlFor={`${actionName}-modal`} className="modal cursor-pointer">
+            <label htmlFor={`${actionName}-NFT-modal`} className="modal cursor-pointer">
                 <label className="modal-box relative flex flex-col bg-neutral text-neutral-content bg-opacity-95 max-w-4xl" htmlFor="">
                     {msg ? 
                         <>
