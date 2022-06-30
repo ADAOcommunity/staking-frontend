@@ -1,13 +1,12 @@
 import Head from 'next/head'
 import Footer from './Footer'
-import dynamic from 'next/dynamic'
+import Navbar from './Navbar'
 export default function Layout({
     children,
 }: {
     children: React.ReactNode
     home?: boolean
 }) {
-    const Navbar = dynamic(() => import('./Navbar'), { ssr: false })
     const siteTitle = `ADAOCommunity Staking Portal`
     
     return (
@@ -27,7 +26,7 @@ export default function Layout({
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <header>
-                { Navbar ? <Navbar/> : <></> }
+                <Navbar/>
             </header>
             <main>{children}</main>
             <Footer/>
