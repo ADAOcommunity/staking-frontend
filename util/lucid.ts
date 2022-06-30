@@ -1,11 +1,11 @@
 import { Blockfrost, WalletProvider, Lucid } from 'lucid-cardano'
 
-const initializeLucid = async (walletName: WalletAPI) => {
+const initializeLucid = async (walletapi: WalletAPI | undefined) => {
     let lucid = await Lucid.new(
         new Blockfrost('https://cardano-testnet.blockfrost.io/api/v0', 'testnetRvOtxC8BHnZXiBvdeM9b3mLbi8KQPwzA'),
         'Testnet'//  as Network
     )
-    if(walletName) lucid = lucid.selectWallet(walletName)
+    if(walletapi) lucid = lucid.selectWallet(walletapi)
     return lucid
 }
 
