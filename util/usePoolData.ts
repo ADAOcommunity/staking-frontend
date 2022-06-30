@@ -70,11 +70,11 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
     const getPendingRewards = async () => {
         let res: bigint | string = ''
         if(walletEnabled) {
-            const lib = await initializeLucid(walletName)
+            const lib = await initializeLucid(await window.cardano[walletName].enable())
             try {
                 const rawResponse = await fetch(`${API_URL}/pendingRewards`, {
                     method: 'POST',
-                    body: JSON.stringify({poolIndex: poolIndex, address: lib.wallet.address})
+                    body: JSON.stringify({poolIndex: poolIndex, address: lib.wallet.address()})
                 });
                 let jRes = await rawResponse.json()
                 res = jRes.pendingRewards

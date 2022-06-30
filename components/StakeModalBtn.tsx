@@ -41,9 +41,9 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
         setState('loading')
         setMsg("Waiting...")
         try {
-            const Lucid = await initializeLucid(walletName)
+            const Lucid = await initializeLucid(await window.cardano[walletName].enable())
             let total: bigint = 0n;
-            const utxos = await Lucid.utxosAtWithUnit(Lucid.wallet.address, stakingUnit)
+            const utxos = await Lucid.utxosAtWithUnit(await Lucid.wallet.address(), stakingUnit)
             utxos.forEach(u => total += (u.assets[stakingUnit] as bigint))
             const totalN = BigInt(total.toString()) as bigint /// divide by decimals
             setTokenAmount(Number((totalN / BigInt(2) as bigint).toString()))
@@ -64,7 +64,7 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
         setState('loading')
         setMsg("Waiting...")
         try {
-            const Lucid = await initializeLucid(walletName)
+            const Lucid = await initializeLucid(await window.cardano[walletName].enable())
             let total: bigint = 0n;
             const utxos = await Lucid.utxosAtWithUnit(contractAddress, stakingUnit)
             const pkh = pkhStore

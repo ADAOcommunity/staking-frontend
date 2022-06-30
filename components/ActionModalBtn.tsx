@@ -19,7 +19,7 @@ export default function StakeModalBtn({ actionName, enabled, action }: { actionN
             setMsg("")
             setState('error')
             console.log(JSON.stringify(err))
-            setMsg(`Error: ${err.info || err.message || err || ''}`)
+            setMsg(`Error: ${err.info || err.message || err ? typeof err === "object" ? JSON.stringify(err) : '' : ''}`)
         }
     }
     
