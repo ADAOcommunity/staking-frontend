@@ -9,7 +9,7 @@ import { Assets} from 'lucid-cardano'
 import { DEPOSIT_DATUM_HASH } from "../util/sc";
 
 type ActionState = "loading" | "success" | "error"
-export default function StakeModalBtn({ actionName, enabled, stakingUnit, contractAddress, action }: { actionName: string, enabled: boolean, stakingUnit: string , contractAddress: string, action: (assets: Assets | null) => Promise<any> }) {
+export default function StakeModalBtn({ actionName, enabled, stakingUnit, contractAddress, contractAddress2, action }: { actionName: string, enabled: boolean, stakingUnit: string , contractAddress: string, contractAddress2: string, action: (assets: Assets | null) => Promise<any> }) {
     const [tokenAmount, setTokenAmount] = useState(0);
     const [state, setState] = useState<ActionState>()
     const [msg, setMsg] = useState("")
@@ -30,8 +30,12 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
         } catch(err: any) {
             setMsg("")
             setState('error')
-            console.log(JSON.stringify(err))
-            setMsg(`Error: ${err.info || err.message || err || ''}`)
+            setMsg(`Error: ${err.info || err.message || err.error || err ? typeof err === "object" ? JSON.stringify(err) != "" ?
+                JSON.stringify(err) :
+                'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
+                'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
+                'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.'}`
+            )
         }
     }
     
@@ -44,6 +48,10 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
             const Lucid = await initializeLucid(await window.cardano[walletName].enable())
             let total: bigint = 0n;
             const utxos = await Lucid.utxosAtWithUnit(await Lucid.wallet.address(), stakingUnit)
+            console.log('stakingUnit')
+            console.log(stakingUnit)
+            console.log('utxos.length')
+            console.log(utxos.length)
             utxos.forEach(u => total += (u.assets[stakingUnit] as bigint))
             const totalN = BigInt(total.toString()) as bigint /// divide by decimals
             setTokenAmount(Number((totalN / BigInt(2) as bigint).toString()))
@@ -65,8 +73,18 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
         setMsg("Waiting...")
         try {
             const Lucid = await initializeLucid(await window.cardano[walletName].enable())
+	    console.log("loadAvailableWithdraw")
             let total: bigint = 0n;
-            const utxos = await Lucid.utxosAtWithUnit(contractAddress, stakingUnit)
+            let utxos = await Lucid.utxosAtWithUnit(contractAddress, stakingUnit)
+	    let utxos2 = await Lucid.utxosAtWithUnit(contractAddress2, stakingUnit)
+	    if (utxos2 && utxos2.length > 0) {
+	        console.log("really?")
+	        utxos = utxos.concat(utxos2)
+	    }
+	    // utxos = utxos.concat(await Lucid.utxosAt(contractAddress2))
+	    //utxos = utxos.filter((u) => {
+		//return Object.keys(u.assets).indexOf(stakingUnit) != -1
+	    //})
             const pkh = pkhStore
             if(!pkh) throw 'No key hash for a user, try connecting your wallet again'
             const ownedUtxos = utxos.filter((u) => {
@@ -91,10 +109,10 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
     return (
         <>
             {enabled ? 
-                <label htmlFor={`${actionName}-modal`} className="btn btn-sm mr-1 modal-button">{actionName}</label> :
+                <label htmlFor={`${contractAddress}-${actionName}-modal`} className="btn btn-sm mr-1 modal-button">{actionName}</label> :
                 <button disabled className="btn btn-sm mr-1 modal-button">{actionName}</button>
             }
-            <input type="checkbox" id={`${actionName}-modal`} onChange={(e) => {
+            <input type="checkbox" id={`${contractAddress}-${actionName}-modal`} onChange={(e) => {
                 if(e.target.checked){
                     if (actionName == 'Withdraw') {
                         loadAvailableAmountWithdraw()
@@ -106,7 +124,7 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
                     setState(undefined)
                 }
             }} className="modal-toggle"/>
-            <label htmlFor={`${actionName}-modal`} className="modal cursor-pointer">
+            <label htmlFor={`${contractAddress}-${actionName}-modal`} className="modal cursor-pointer">
                 <label className="modal-box relative flex flex-col bg-neutral text-neutral-content bg-opacity-95 max-w-4xl" htmlFor="">
                     {msg ? 
                         <>
@@ -124,7 +142,7 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
                         </>
                         :
                         <>
-                            <h3 className="text-lg font-bold">ADAO/ADA LP token amount</h3>
+                            <h3 className="text-lg font-bold">Token amount</h3>
                             <input 
                                 type="number"
                                 placeholder="Amount"

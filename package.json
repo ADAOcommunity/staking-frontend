@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 3002"
   },
   "dependencies": {
     "@prisma/client": "^3.14.0",

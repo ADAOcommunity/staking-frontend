@@ -2,8 +2,8 @@ import { Blockfrost, WalletProvider, Lucid } from 'lucid-cardano'
 
 const initializeLucid = async (walletapi: WalletAPI | undefined) => {
     let lucid = await Lucid.new(
-        new Blockfrost('https://cardano-testnet.blockfrost.io/api/v0', 'testnetRvOtxC8BHnZXiBvdeM9b3mLbi8KQPwzA'),
-        'Testnet'//  as Network
+        new Blockfrost('https://cardano-mainnet.blockfrost.io/api/v0', 'mainnetGHf1olOJblaj5LD8rcRudajSJGKRU6IL'),
+        'Mainnet'//  as Network
     )
     if(walletapi) lucid = lucid.selectWallet(walletapi)
     return lucid

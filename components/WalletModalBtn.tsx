@@ -5,6 +5,8 @@ import { useStoreActions, useStoreState } from '../util/store'
 export default function WalletModalBtn() {
     const [availableWallets, setAvailableWallets] = useState<{ nami: boolean, eternl: boolean, flint: boolean }>({ nami: false, eternl: false, flint: false })
     const [connected, setConnected] = useState(false)
+    const [accepted, setAccepted] = useState(false)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const walletStore = useStoreState(state => state.wallet)
     const setWallet = useStoreActions(actions => actions.setWallet)
     const setPkh = useStoreActions(actions => actions.setPkh)
@@ -65,8 +67,14 @@ export default function WalletModalBtn() {
                                     key={wallet} disabled={!enabled}
                                     className="btn btn-outline text-neutral-content my-3 py-2 text-xl rounded-box"
                                     onClick={async () => {
-                                        if (await window.cardano[wallet].enable()) {
-                                            walletConnected(wallet)
+                                        if(accepted) {
+                                            if (await window.cardano[wallet].enable()) {
+                                                walletConnected(wallet)
+                                            }
+                                            setErrorMessage(null)
+                                        }
+                                        else {
+                                            setErrorMessage('You need to accept our terms of use to connect.')
                                         }
                                     }
                                     }
@@ -75,6 +83,13 @@ export default function WalletModalBtn() {
                                 </button>
                             )
                         })}
+                        <div className="flex flex-row">
+                            <input type={'checkbox'} checked={accepted} onChange={() => setAccepted(!accepted)}/>
+                            <div className="flex flex-col">
+                                <p>By connecting you are accepting our <a href="/terms-of-use" target={'_blank'}>Terms Of Use</a></p>
+                                {errorMessage ? <p className="text-red-600">{errorMessage}</p> : <></>}
+                            </div>
+                        </div>
                     </div>
                 </label>
             </label>
