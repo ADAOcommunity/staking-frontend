@@ -2,13 +2,13 @@ import { SpendingValidator } from "lucid-cardano"
 
 
 export type PoolInfo = {
-  contractAddress: string
   distAddress: string
   type: 'NFT' | 'FT'
   stakingUnit: string | undefined
   stakingPolicy: string | undefined
   harvestUnit: string
   script: SpendingValidator
+  oldScript: SpendingValidator
   maxSize: number
   rewardPerEpochQt: number
   reward: string

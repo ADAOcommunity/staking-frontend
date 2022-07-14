@@ -31,8 +31,12 @@ export default function NftStakeModalBtn({ actionName, enabled, policyid, contra
         } catch(err: any) {
             setMsg("")
             setState('error')
-            console.log(JSON.stringify(err))
-            setMsg(`Error: ${err.info || err.message || err || ''}`)
+            setMsg(`Error: ${err.info || err.message || err ? typeof err === "object" ? JSON.stringify(err) != "" ?
+            JSON.stringify(err) :
+            'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
+            'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
+            'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.'}`
+        )
         }
     }
 

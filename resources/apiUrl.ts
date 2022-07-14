@@ -1,3 +1,3 @@
-const API_URL = "https://testnet-staking.localitydao.com"
+const API_URL = "https://staking.adaodapp.xyz/api"
 
 export { API_URL }

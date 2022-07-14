@@ -97,9 +97,15 @@ function subAssetsFromUtxos(utxos: UTxO[], value: Assets) : Assets {
 }
 
 
-const getAllUtxos = async (walletName: string, contractAddress: string) => {
-    const Lucid = await initializeLucid(walletName)
-    return await Lucid.utxosAt(contractAddress)
+const getAllUtxos = async (walletName: string, contractAddress: string, contractAddress2: string = "") => {
+    const Lucid = await initializeLucid(walletName ? await window.cardano[walletName].enable() : undefined)
+    let old = []
+    if (contractAddress2 != "") {
+        old = await Lucid.utxosAt(contractAddress2)
+    }
+    let all = await Lucid.utxosAt(contractAddress)
+    all = all.concat(old)
+    return all
 }
 
 const getStakedUnitAmount = (utxos: UTxO[], pkh: string, stakingUnit: string) => {
@@ -186,8 +192,8 @@ const addAssets = (assets1 : Assets, assets2 : Assets) : Assets => {
     return newAssets;
 }
 
-const getStakingAddress = (scriptHex: string, testnet: boolean = true) => C.EnterpriseAddress.new(
-    testnet ? 0 : 1,
+const getStakingAddress = (scriptHex: string, mainnet: boolean = true) => C.EnterpriseAddress.new(
+    mainnet ? 1 : 0,
     C.StakeCredential.from_scripthash(
         C.PlutusScript.from_bytes(
             Buffer.from(scriptHex, 'hex'),

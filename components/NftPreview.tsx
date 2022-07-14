@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 
-const BLOCKFROST_URL = 'https://cardano-testnet.blockfrost.io/api/v0'
-const BLOCKFROST_KEY = 'testnetJe6W7FM1Jwkh0PxNMZt9OzNND3T1mS1T'
+const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0'
+const BLOCKFROST_KEY = 'mainnetGHf1olOJblaj5LD8rcRudajSJGKRU6IL'
 const IPFS_GATEWAY = 'ipfs.blockfrost.dev'
 const ARWEAVE_GATEWAY = 'arweave.net'
 

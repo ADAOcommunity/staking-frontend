@@ -5,7 +5,7 @@ import { getAllUtxos, getStakedUnitAmount, getStakedTotalAmount, getStakersCount
 import { useStoreState } from "./store";
 import { API_URL } from '../resources/apiUrl'
 
-export default function usePoolData(scriptHex: string, perEpochTotal: bigint, stakeUnit: string | undefined, stakingPolicy: string | undefined,  harvestUnit: string, poolIndex: number){
+export default function usePoolData(scriptHex: string, oldScriptHex: string, perEpochTotal: bigint, stakeUnit: string | undefined, stakingPolicy: string | undefined,  harvestUnit: string, poolIndex: number){
     //string '0' shows 0 in UI, Number 0 shows loading skeleton for dynamic values
     const zero = '0' //0
     const [totalStaked, setTotalStaked] = useState<string | 0>(zero)
@@ -18,6 +18,7 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
     const pkhStore = useStoreState(state => state.pkh)
     
     const contractAddress = getStakingAddress(scriptHex)
+    const contractAddress2 = getStakingAddress(oldScriptHex)
 
     const setLoading = (loading: boolean = true) => {
         const zero = loading ? 0 : '0'
@@ -29,7 +30,7 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
     }
 
     const utxos = async (): Promise<UTxO[]> => {
-        return getAllUtxos(walletName, contractAddress)
+        return getAllUtxos(walletName, contractAddress, contractAddress2)
     }
 
     const getUserStaked = (utxos: UTxO[]) => {
@@ -70,13 +71,16 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
     const getPendingRewards = async () => {
         let res: bigint | string = ''
         if(walletEnabled) {
-            const lib = await initializeLucid(walletName)
+            const lib = await initializeLucid(await window.cardano[walletName].enable())
             try {
                 const rawResponse = await fetch(`${API_URL}/pendingRewards`, {
                     method: 'POST',
-                    body: JSON.stringify({poolIndex: poolIndex, address: lib.wallet.address})
+                    body: JSON.stringify({poolIndex: poolIndex, address: await lib.wallet.address()})
                 });
                 let jRes = await rawResponse.json()
+                if((jRes.pendingRewards || jRes.pendingRewards === '') && jRes.error) {
+                    console.log(jRes.error)
+                }
                 res = jRes.pendingRewards
             } catch (e) {
                 console.log("Failed fetching rewards")
@@ -84,7 +88,7 @@ export default function usePoolData(scriptHex: string, perEpochTotal: bigint, st
             }
         }
         if(!res) res = '0'
-        setPendingRewards(res.toString())
+        setPendingRewards((Number(res) / 1000000).toString())
     }
 
     // const getPendingRewards = async (utxos: UTxO[]) => {
