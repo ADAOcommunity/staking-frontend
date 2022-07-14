@@ -30,7 +30,7 @@ export default function StakeModalBtn({ actionName, enabled, stakingUnit, contra
         } catch(err: any) {
             setMsg("")
             setState('error')
-            setMsg(`Error: ${err.info || err.message || err.error || err ? typeof err === "object" ? JSON.stringify(err) != "" ?
+            setMsg(`Error: ${err.info || err.message || err.error || err ? typeof err === "object" ? (JSON.stringify(err) !== "" && JSON.stringify(err) !== "{}") ?
                 JSON.stringify(err) :
                 'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
                 'Your tokens are safe, in order to accomplish your action, please come back in five minutes and try again. If the issue persists, please reach out to ADAO in the discord.' :
