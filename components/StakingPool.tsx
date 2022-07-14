@@ -133,15 +133,19 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
             utxo.datum = DEPOSIT_DATUM(pkh);
             return utxo
         })
-	console.log("Right before txCreation for withdraw")
+	    console.log("Right before txCreation for withdraw")
 
-        const tx: TxComplete = await withdrawTx(utxos, await loadedLucid.wallet.address(), pkh, harvest, value, contract);
-
-        const signedTx = await (tx.sign()).complete();
-
-        const txhash = await signedTx.submit();
-        awaitTx(txhash)
-        return txhash
+    
+        try {
+            const tx: TxComplete = await withdrawTx(utxos, await loadedLucid.wallet.address(), pkh, harvest, value, contract)
+            const signedTx = await (tx.sign()).complete();
+            const txhash = await signedTx.submit();
+            awaitTx(txhash)
+            return txhash
+        } catch(exc) {
+            console.log(exc)
+            throw exc
+        }
     }
 
     const stakingScript = poolInfo.script
@@ -182,15 +186,18 @@ export default function StakingPool({ stakingPoolInfo }: { stakingPoolInfo: Stak
                 .payToContract(stakingAddress, DEPOSIT_DATUM(pk), returnToContract)
                 .attachMetadataWithConversion(PUB_KEY_LABEL, { 0: pk })
         }
-	console.log("About to complete")
+	    console.log("About to complete")
 
+        
         const complTx = await tx.complete();
+        return complTx;
+        
+
         /*console.log(
             Buffer.from(
                 complTx.txComplete.to_bytes()
             ).toString('hex')
         );*/
-        return complTx;
     }
 
     async function depositTx(pkhf: string, value: Assets) {
