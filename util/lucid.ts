@@ -1,4 +1,4 @@
-import { Blockfrost, WalletProvider, Lucid } from 'lucid-cardano'
+import { Blockfrost, Lucid } from 'lucid-cardano'
 
 const initializeLucid = async (walletapi: WalletAPI | undefined) => {
     let lucid = await Lucid.new(

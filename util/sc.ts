@@ -99,7 +99,7 @@ function subAssetsFromUtxos(utxos: UTxO[], value: Assets) : Assets {
 
 const getAllUtxos = async (walletName: string, contractAddress: string, contractAddress2: string = "") => {
     const Lucid = await initializeLucid(walletName ? await window.cardano[walletName].enable() : undefined)
-    let old = []
+    let old: UTxO[] = []
     if (contractAddress2 != "") {
         old = await Lucid.utxosAt(contractAddress2)
     }
@@ -201,7 +201,7 @@ const getStakingAddress = (scriptHex: string, mainnet: boolean = true) => C.Ente
     ),
 )
     .to_address()
-    .to_bech32()
+    .to_bech32(undefined)
 
 
 export { PUB_KEY_LABEL, DATUM_LABEL, DATUM_TYPE, DEPOSIT_DATUM, DEPOSIT_DATUM_HASH, WITHDRAW }
